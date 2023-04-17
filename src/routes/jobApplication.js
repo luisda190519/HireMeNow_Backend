@@ -74,7 +74,7 @@ router.get("/:location", async (req, res) => {
     }
 });
 
-router.get("/jobs", async (req, res) => {
+router.get("/:title/:company/:location", async (req, res) => {
     const { title, location } = req.query;
     const jobs = await Job.find({
         title: new RegExp(title, "i"),
