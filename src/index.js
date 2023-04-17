@@ -5,11 +5,13 @@ const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const cors = require("cors");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const User = require("./models/userModel");
+const Reclutador = require("./models/reclutadorModel");
 require("dotenv").config();
 
 const authRoutes = require("./routes/auth");
+const jobRoutes = require("./routes/jobApplication");
 
 //app
 const app = express();
@@ -46,8 +48,25 @@ passport.use(
         { usernameField: "email" },
         async (email, password, done) => {
             try {
-                const user = await User.findOne({ email: email });
+                let user = await User.findOne({ email: email });
                 if (!user) {
+                    user = await Reclutador.findOne({ email: email });
+
+                    if (!user) {
+                        return done(null, false, {
+                            message: "Incorrect email or password",
+                        });
+                    }
+
+                    const match = await bcrypt.compare(password, user.password);
+                    if (!match) {
+                        return done(null, false, {
+                            message: "Incorrect email or password",
+                        });
+                    } else {
+                        return done(null, user);
+                    }
+
                     return done(null, false, {
                         message: "Incorrect email or password",
                     });
@@ -84,6 +103,7 @@ passport.deserializeUser(async (id, done) => {
 
 //Rutas
 app.use("/api/auth", authRoutes);
+app.use("/api/jobs", jobRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

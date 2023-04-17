@@ -3,29 +3,54 @@ const router = express.Router();
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
+const Reclutador = require("../models/reclutadorModel");
 
 router.post("/signup", async (req, res) => {
     try {
-        const { email, password, firstName, lastName, cellphone } = req.body;
-        const userExists = await User.findOne({ email: email });
-        if (userExists) {
-            return res.status(400).json({ message: "User already exists" });
-        }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({
-            email: email,
-            password: hashedPassword,
-            firstName: firstName,
-            lastName: lastName,
-            cellphone: cellphone,
-        });
-        await user.save();
-        req.login(user, (err) => {
-            if (err) {
-                return res.status(500).json({ message: "Server Error" });
+        const { email, password, firstName, lastName, cellphone, role } =
+            req.body;
+
+        if (role === "user") {
+            const userExists = await User.findOne({ email: email });
+            if (userExists) {
+                return res.status(400).json({ message: "User already exists" });
             }
-            return res.status(201).json(req.user);
-        });
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const user = new User({
+                email: email,
+                password: hashedPassword,
+                firstName: firstName,
+                lastName: lastName,
+                cellphone: cellphone,
+            });
+            await user.save();
+            req.login(user, (err) => {
+                if (err) {
+                    return res.status(500).json({ message: "Server Error" });
+                }
+                return res.status(201).json(req.user);
+            });
+        } else {
+            const userExists = await Reclutador.findOne({ email: email });
+            if (userExists) {
+                return res.status(400).json({ message: "User already exists" });
+            }
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const user = new Reclutador({
+                email: email,
+                password: hashedPassword,
+                firstName: firstName,
+                lastName: lastName,
+                cellphone: cellphone,
+            });
+            await user.save();
+            req.login(user, (err) => {
+                if (err) {
+                    return res.status(500).json({ message: "Server Error" });
+                }
+                return res.status(201).json(req.user);
+            });
+        }
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Server Error" });

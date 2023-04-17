@@ -24,6 +24,8 @@ router.post("/postJob", async (req, res) => {
             publishTime,
             requirements,
             tags,
+            image,
+            owner
         } = req.body;
 
         const job = new Job({
@@ -35,6 +37,8 @@ router.post("/postJob", async (req, res) => {
             publishTime,
             requirements,
             tags,
+            image,
+            owner
         });
 
         const savedJob = await job.save();
