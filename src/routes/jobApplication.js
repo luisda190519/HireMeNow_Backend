@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require("../models/userModel");
 const Job = require("../models/jobModel");
 
-router.get("/:jobID", async (req, res) => {
+router.get("/find/:jobID", async (req, res) => {
     try {
         const job = await Job.findById(req.params.jobID);
         res.json(job);
@@ -62,7 +62,7 @@ router.get("/search", async (req, res) => {
     }
 });
 
-router.get("/:location", async (req, res) => {
+router.get("/location/:location", async (req, res) => {
     const location = req.params.location;
     try {
         const jobs = await Job.find({
