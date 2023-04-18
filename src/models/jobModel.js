@@ -31,7 +31,7 @@ const jobSchema = new mongoose.Schema({
     },
     owner : {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Reclutador'
+        ref: 'User'
     },
     requirements: [{ type: String, required: false, default: "" }],
     tags: [{ type: String, required: false, default: "" }],
