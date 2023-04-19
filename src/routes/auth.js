@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
+const Job = require("../models/jobModel");
 
 router.post("/signup", async (req, res) => {
     try {
@@ -14,14 +15,14 @@ router.post("/signup", async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const isRecruiter = (role === "user" ? false : true)
+        const isRecruiter = role === "user" ? false : true;
         const user = new User({
             email: email,
             password: hashedPassword,
             firstName: firstName,
             lastName: lastName,
             cellphone: cellphone,
-            isRecruiter
+            isRecruiter,
         });
         await user.save();
         req.login(user, (err) => {
@@ -49,6 +50,24 @@ router.get("/:userID", async (req, res) => {
         return res.json(userExist);
     }
     return res.json({ message: "user not finded" });
+});
+
+router.get("/jobLikes/:userID", async (req, res) => {
+    try {
+        const userID = req.params.userID;
+        const user = await User.findById(userID).populate("jobLikes");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const jobLikes = user.jobLikes;
+
+        res.json({ jobLikes });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 });
 
 router.put("/fillProfile/:userID", async (req, res) => {

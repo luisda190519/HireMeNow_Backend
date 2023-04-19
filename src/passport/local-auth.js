@@ -68,23 +68,11 @@ passport.use(
             try {
                 let user = await User.findOne({ email: email });
                 if (!user) {
-                    user = await Reclutador.findOne({ email: email });
-
-                    if (!user) {
-                        return done(null, false, {
-                            message: "Incorrect email or password",
-                        });
-                    }
-
-                    const match = user.comparePassword(password);
-                    if (!match) {
-                        return done(null, false, {
-                            message: "Incorrect email or password",
-                        });
-                    } else {
-                        return done(null, user);
-                    }
+                    return done(null, false, {
+                        message: "Incorrect email or password",
+                    });
                 }
+
                 const match = user.comparePassword(password);
                 if (!match) {
                     return done(null, false, {

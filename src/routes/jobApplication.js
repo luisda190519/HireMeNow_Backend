@@ -3,10 +3,53 @@ const router = express.Router();
 const User = require("../models/userModel");
 const Job = require("../models/jobModel");
 
-router.get("/find/:jobID", async (req, res) => {
+router.post("/postular/:jobID/user/:userID", async (req, res) => {
     try {
-        const job = await Job.findById(req.params.jobID);
-        res.json(job);
+        const { jobID, userID } = req.params;
+        const user = await User.findById(userID);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const job = await Job.findById(jobID);
+        if (!job) {
+            return res.status(404).json({ error: "Job not found" });
+        }
+        user.jobApplications.push(jobID);
+        await user.save();
+        res.json({ message: "worked" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
+    }
+});
+
+router.post("/like/:jobID/user/:userID", async (req, res) => {
+    try {
+        const { jobID, userID } = req.params;
+        let message = false;
+        const user = await User.findById(userID);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const job = await Job.findById(jobID);
+        if (!job) {
+            return res.status(404).json({ error: "Job not found" });
+        }
+
+        if (user.jobLikes.includes(job._id)) {
+            const index = user.jobLikes.indexOf(job._id);
+            if (index !== -1) {
+                user.jobLikes.splice(index, 1);
+            }
+        } else {
+            user.jobLikes.push(jobID);
+            message = true;
+        }
+
+        await user.save();
+        res.json({ message: message });
     } catch (error) {
         console.error(error);
         res.status(500).send("Server error");
