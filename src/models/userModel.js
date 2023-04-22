@@ -65,6 +65,16 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
+    image: {
+        publicId: {
+            type: String,
+            required: false,
+        },
+        url: {
+            type: String,
+            required: false,
+        },
+    },
 });
 
 userSchema.methods.encryptPassword = (password) => {
@@ -76,4 +86,3 @@ userSchema.methods.comparePassword = function (password) {
 };
 
 module.exports = mongoose.model("User", userSchema);
-

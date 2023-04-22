@@ -27,5 +27,6 @@ router.get(
 router.get('/title/:title/place/:location', searchJobByTitleAndLocation);
 router.get('/title/:title', searchJobByTitle);
 router.get('/randomJobs', getRandomJobs);
+router.get('/', getRandomJobs);
 
 module.exports = router;
