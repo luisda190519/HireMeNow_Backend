@@ -3,12 +3,14 @@ const LocalStrategy = require("passport-local").Strategy;
 const User = require("../models/userModel");
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user._id);
 });
 
 passport.deserializeUser(async (id, done) => {
-    const user = await User.findById(id);
-    done(null, user);
+    if (id) {
+        const user = await User.findById(id);
+        done(null, user);
+    }
 });
 
 passport.use(
@@ -81,8 +83,7 @@ passport.use(
                 }
                 return done(null, user);
             } catch (error) {
-                //console.log(error);
-                return done(error);
+                console.log(error);
             }
         }
     )

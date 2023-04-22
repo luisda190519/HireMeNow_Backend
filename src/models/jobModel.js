@@ -37,6 +37,4 @@ const jobSchema = new mongoose.Schema({
     tags: [{ type: String, required: false, default: "" }],
 });
 
-const Job = mongoose.model("JobApplication", jobSchema);
-
-module.exports = Job;
+module.exports = mongoose.model("JobApplication", jobSchema);
