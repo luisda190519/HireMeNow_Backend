@@ -51,10 +51,10 @@ passport.use(
         async (req, email, password, done) => {
             const user = await User.findOne({ email: email });
             if (!user) {
-                return done(null, false, "User not Found");
+                return done(null, false, { message: "User not Found" });
             }
             if (!user.comparePassword(password)) {
-                return done(null, false, "Incorrect password");
+                return done(null, false, { message: "Incorrect password" });
             }
             done(null, user);
         }
@@ -73,7 +73,7 @@ passport.use(
                     });
                 }
 
-                const match = user.comparePassword(password);
+                const match = await user.comparePassword(password);
                 if (!match) {
                     return done(null, false, {
                         message: "Incorrect email or password",
@@ -81,7 +81,7 @@ passport.use(
                 }
                 return done(null, user);
             } catch (error) {
-                console.log(error);
+                //console.log(error);
                 return done(error);
             }
         }

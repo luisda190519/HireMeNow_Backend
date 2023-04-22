@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
+const passport = require("passport");
 const controller = {};
 
 controller.signUp = async (req, res) => {
@@ -28,7 +29,7 @@ controller.signUp = async (req, res) => {
       }
     })(req, res, next);
   } catch (error) {
-    console.log(error);
+    console.log("error");
     return res.status(500).json({ message: 'Server Error' });
   }
 };
