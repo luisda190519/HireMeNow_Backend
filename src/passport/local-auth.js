@@ -23,15 +23,21 @@ passport.use(
         },
         async (req, email, password, done) => {
             try {
+                const { firstName, lastName, cellphone, role } = req.body;
                 const user = await User.findOne({ email: email });
                 if (user) {
                     return done(null, false, {
                         message: "Email already exists",
                     });
                 } else {
-                    const newUser = new User();
-                    newUser.email = email;
-                    newUser.password = newUser.encryptPassword(password);
+                    const newUser = new User({
+                        email: email,
+                        password: password,
+                        firstName: firstName,
+                        lastName: lastName,
+                        cellphone: cellphone,
+                        isRecruiter: role === "user" ? false : true,
+                    });
                     await newUser.save();
                     return done(null, newUser);
                 }

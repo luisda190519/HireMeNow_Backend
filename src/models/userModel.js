@@ -26,14 +26,17 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         required: false,
+        default: ""
     },
     location: {
         type: String,
         required: false,
+        default: ""
     },
     description: {
         type: String,
         required: false,
+        default: ""
     },
     experience: [{ type: String, required: false, default: "" }],
     estudios: [{ type: String, required: false, default: "" }],
@@ -72,7 +75,7 @@ const userSchema = new mongoose.Schema({
         },
         url: {
             type: String,
-            required: false,
+            required: false,  
         },
     },
 });
