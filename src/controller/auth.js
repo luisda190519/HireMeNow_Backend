@@ -65,9 +65,6 @@ controller.getJobLikesByUserID = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-
-        const jobLikes = user.jobLikes;
-
         res.json(user.jobLikes);
     } catch (err) {
         console.error(err);
@@ -135,13 +132,11 @@ controller.fillProfile = async (req, res) => {
                 { new: true }
             );
 
-            console.log(req.body);
 
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            //console.log(user)
             res.json(user);
         });
     } catch (err) {

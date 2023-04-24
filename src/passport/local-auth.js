@@ -1,6 +1,7 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("../models/userModel");
+const bcrypt = require("bcrypt");
 
 passport.serializeUser((user, done) => {
     done(null, user._id);
@@ -32,7 +33,7 @@ passport.use(
                 } else {
                     const newUser = new User({
                         email: email,
-                        password: password,
+                        password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
                         firstName: firstName,
                         lastName: lastName,
                         cellphone: cellphone,

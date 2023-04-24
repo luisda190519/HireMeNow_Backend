@@ -5,6 +5,7 @@ const controller = {};
 controller.addJobApplication = async (req, res) => {
     try {
         const { jobID, userID } = req.params;
+        let message = false;
         const user = await User.findById(userID);
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -14,9 +15,24 @@ controller.addJobApplication = async (req, res) => {
         if (!job) {
             return res.status(404).json({ error: "Job not found" });
         }
-        user.jobApplications.push(jobID);
+
+        const jobApplicationIndex = user.jobApplications.findIndex(
+            (application) => application.job.equals(job._id)
+        );
+
+        if (jobApplicationIndex !== -1) {
+            user.jobApplications[jobApplicationIndex].state =
+                1 - user.jobApplications[jobApplicationIndex].state;
+            const index2 = job.usuariosAplicados.indexOf(user._id);
+            job.usuariosAplicados.splice(index2, 1);
+        } else {
+            user.jobApplications.push({ job: job._id, state: 1 });
+            job.usuariosAplicados.push(userID);
+        }
+
         await user.save();
-        res.json({ message: "worked" });
+        await job.save();
+        res.json({ message: message });
     } catch (error) {
         console.error(error);
         res.status(500).send("Server error");
@@ -162,6 +178,73 @@ controller.getRandomJobs = async (req, res) => {
     try {
         const jobs = await Job.aggregate([{ $sample: { size: 7 } }]);
         res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+controller.getPostuladosByJobID = async (req, res) => {
+    try {
+        const jobID = req.params.jobID;
+        const trabajo = await Job.findById(jobID).populate("usuariosAplicados");
+
+        if (!trabajo) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json(trabajo.usuariosAplicados);
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+controller.getJobsPostuladosByUserID = async (req, res) => {
+    try {
+        const userID = req.params.userID;
+        const usuario = await User.findById(userID).populate({
+            path: "jobApplications",
+            populate: {
+                path: "job",
+            },
+        });
+
+        if (!usuario) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const jobs = usuario.jobApplications.map(application => {
+            const job = application.job.toObject();
+            return {
+                ...job,
+                state: application.state
+            };
+        });
+
+        res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+controller.updateJobApplicationState = async (req, res) => {
+    try {
+        const { userID, jobID, state } = req.body;
+
+        const user = await User.findById(userID);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const jobIndex = user.jobApplications.findIndex(application => application.job.toString() === jobID);
+
+        if (jobIndex === -1) {
+            return res.status(404).json({ message: "JobApplication not found" });
+        }
+
+        user.jobApplications[jobIndex].state = state;
+        await user.save();
+
+        res.json({ message: "JobApplication state updated successfully" });
     } catch (error) {
         res.status(500).json({ message: "Server error" });
     }

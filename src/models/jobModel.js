@@ -35,6 +35,8 @@ const jobSchema = new mongoose.Schema({
     },
     requirements: [{ type: String, required: false, default: "" }],
     tags: [{ type: String, required: false, default: "" }],
+    usuariosAplicados: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
+
 
 module.exports = mongoose.model("JobApplication", jobSchema);

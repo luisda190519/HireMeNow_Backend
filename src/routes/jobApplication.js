@@ -10,6 +10,9 @@ const {
   searchJobByTitleAndLocation,
   searchJobByTitle,
   getRandomJobs,
+  getPostuladosByJobID,
+  getJobsPostuladosByUserID,
+  updateJobApplicationState
 } = require('../controller/jobApplication');
 
 // Post routes
@@ -27,6 +30,10 @@ router.get(
 router.get('/title/:title/place/:location', searchJobByTitleAndLocation);
 router.get('/title/:title', searchJobByTitle);
 router.get('/randomJobs', getRandomJobs);
+router.get('/postulados/job/:jobID', getPostuladosByJobID)
+router.get('/postulaciones/job/:userID', getJobsPostuladosByUserID)
 router.get('/', getRandomJobs);
 
+//Put request
+router.put('/editState', updateJobApplicationState)
 module.exports = router;

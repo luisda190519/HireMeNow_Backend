@@ -45,9 +45,15 @@ const userSchema = new mongoose.Schema({
 
     jobApplications: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "JobApplication",
-            default: "",
+            job:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "JobApplication",
+                default: null,
+            },
+            state:{
+                type:Number,
+                default:1
+            }
         },
     ],
     jobLikes: [
