@@ -212,11 +212,11 @@ controller.getJobsPostuladosByUserID = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const jobs = usuario.jobApplications.map(application => {
+        const jobs = usuario.jobApplications.map((application) => {
             const job = application.job.toObject();
             return {
                 ...job,
-                state: application.state
+                state: application.state,
             };
         });
 
@@ -235,14 +235,20 @@ controller.updateJobApplicationState = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const jobIndex = user.jobApplications.findIndex(application => application.job.toString() === jobID);
+        const jobIndex = user.jobApplications.findIndex(
+            (application) => application.job.toString() === jobID
+        );
 
         if (jobIndex === -1) {
-            return res.status(404).json({ message: "JobApplication not found" });
+            return res
+                .status(404)
+                .json({ message: "JobApplication not found" });
         }
 
-        user.jobApplications[jobIndex].state = state;
-        await user.save();
+        if (state > user.jobApplications[jobIndex].state) {
+            user.jobApplications[jobIndex].state = state;
+            await user.save();
+        }
 
         res.json({ message: "JobApplication state updated successfully" });
     } catch (error) {
