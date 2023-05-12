@@ -13,9 +13,9 @@ require('./passport/local-auth');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: process.env.origin }));
+app.use(cors({ credentials: true, origin: 'https://hiremenowapp.netlify.app' }));
 
-// Configuracion
+// Configuration
 app.use(
   session({
     secret: process.env.secret,
@@ -23,16 +23,15 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 3600000,
-      expires: new Date(Date.now() + 3600000) 
+      expires: new Date(Date.now() + 3600000)
     }
   })
 );
 
-
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Rutas
+// Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/jobs', require('./routes/jobApplication'));
 
